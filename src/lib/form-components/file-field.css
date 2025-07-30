@@ -1,0 +1,18 @@
+input[type='file'] {
+	display: none;
+}
+
+.custom-file-upload {
+	width: 20rem;
+	height: 8rem;
+
+	place-content: center;
+	text-align: center;
+
+	border: 2px dashed var(--line-clr);
+	border-radius: 1rem;
+	background-color: var(--bg-clr);
+	box-shadow: 0 0 7px var(--hover-clr);
+
+	cursor: pointer;
+}

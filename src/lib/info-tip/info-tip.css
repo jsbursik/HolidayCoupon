@@ -1,0 +1,38 @@
+.info-tip {
+  position: relative;
+  display: grid;
+  place-items: center;
+
+  color: var(--accent-clr);
+
+  & > svg {
+    font-size: 1.2rem;
+  }
+
+  &:hover {
+    color: var(--accent-clr-secondary);
+  }
+
+  &:hover > #info-tip {
+    display: block;
+  }
+}
+
+#info-tip {
+  position: absolute;
+  display: none;
+
+  width: 30ch;
+
+  padding: 1rem;
+
+  top: -150%;
+  left: 2rem;
+  z-index: 99;
+
+  border: 2px solid var(--hover-clr);
+  border-radius: 1rem;
+
+  color: var(--text-clr);
+  background-color: var(--bg-clr);
+}
