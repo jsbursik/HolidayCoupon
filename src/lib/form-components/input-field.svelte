@@ -1,20 +1,11 @@
 <script lang="ts">
-  let { id, label, value = $bindable(), placeholder = "", emptyBlur = true, ...props } = $props();
+  import { inputValidation } from "$lib/actions/inputValidation";
+  import type { InputType } from "$appTypes";
 
-  let inputField: HTMLInputElement;
-  let isValid = $state(true);
-
-  function handleInput(e: Event) {
-    const tar = e.target as HTMLInputElement;
-    if (emptyBlur && !tar.value) {
-      isValid = false;
-    } else {
-      isValid = true;
-    }
-  }
+  let { type = "text" as InputType, id, label, value = $bindable(), ...props } = $props();
 </script>
 
 <span class="form-control">
-  <label for={id}>{label}:</label>
-  <input type="text" class={isValid ? "" : "invalid"} {id} name={id} {placeholder} bind:this={inputField} onblur={handleInput} />
+  <label for={id}>{label}</label>
+  <input {type} {id} name={id} bind:value use:inputValidation={{ type }} {...props} />
 </span>

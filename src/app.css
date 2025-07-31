@@ -77,6 +77,10 @@ h3 {
   padding-block: 1rem;
 }
 
+small {
+  font-size: 0.8rem;
+}
+
 b {
   font-weight: bold;
 }
@@ -114,7 +118,6 @@ select,
 
 .error {
   color: var(--warning-clr);
-  font-style: italic;
 }
 
 .center {
@@ -306,6 +309,11 @@ tbody > tr:nth-child(even) > td:last-child {
   align-items: center;
 }
 
+.column-form > .error {
+  margin-top: -1.5rem;
+  margin-bottom: -2rem;
+}
+
 .form-row {
   display: flex;
   align-items: center;
@@ -342,9 +350,14 @@ input {
   }
 }
 
-.invalid {
+input.invalid {
   box-shadow: 0 0 3px var(--warning-clr) !important;
   border-color: var(--warning-clr) !important;
+}
+
+input.valid {
+  box-shadow: 0 0 3px var(--success-clr) !important;
+  border-color: var(--success-clr) !important;
 }
 
 label:has(+ input[type="text"]),
