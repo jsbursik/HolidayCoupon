@@ -78,7 +78,7 @@ h3 {
 }
 
 small {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 
 b {
@@ -120,6 +120,12 @@ select,
   color: var(--warning-clr);
 }
 
+.column-form small.error {
+  display: flex;
+  margin: 0;
+  justify-content: center;
+}
+
 .center {
   margin: 0 auto;
 }
@@ -148,8 +154,10 @@ select,
     max-width: 80ch;
   }
 
-  &:has(> p) {
-    padding-inline: calc(50% - 40ch);
+  > h1,
+  > h2,
+  > h3 {
+    padding-top: 0;
   }
 }
 
@@ -305,8 +313,11 @@ tbody > tr:nth-child(even) > td:last-child {
 .column-form {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
   align-items: center;
+}
+
+.column-form > .form-control {
+  margin-top: 2rem;
 }
 
 .column-form > .error {
@@ -329,6 +340,11 @@ tbody > tr:nth-child(even) > td:last-child {
   position: relative;
 
   border-radius: 1rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"] {
   box-shadow: 0 0 4px 2px var(--hover-clr);
 }
 
