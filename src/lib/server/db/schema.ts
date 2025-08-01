@@ -1,6 +1,13 @@
-import { pgTable, serial, integer } from 'drizzle-orm/pg-core';
+import { pgSchema, serial, date, text } from "drizzle-orm/pg-core";
 
-export const user = pgTable('user', {
-	id: serial('id').primaryKey(),
-	age: integer('age')
+export const holidayCoupon = pgSchema("holiday_coupon");
+
+export const coupons = holidayCoupon.table("coupons", {
+  id: serial("id").primaryKey(),
+  date: date("date").notNull(),
+  code: text("code").notNull().unique(),
+  first_name: text("first_name").notNull(),
+  last_name: text("last_name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: text("phone").notNull().unique(),
 });
