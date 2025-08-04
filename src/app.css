@@ -150,8 +150,11 @@ select,
   transition: 300ms ease-in-out;
 
   p {
-    margin-top: 1em;
     max-width: 80ch;
+  }
+
+  > p:first-child {
+    margin-top: 1em;
   }
 
   > h1,
@@ -177,9 +180,10 @@ select,
   width: fit-content;
 }
 
-.container.hidden,
-.container-row.hidden {
-  margin-top: -100vh;
+.container.bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .container .btn-close {
@@ -216,7 +220,7 @@ select,
   justify-content: center;
 
   width: fit-content;
-  padding: 0.7rem 2rem;
+  padding: 0.6rem 2rem;
   cursor: pointer;
 
   border: none;
@@ -340,6 +344,12 @@ tbody > tr:nth-child(even) > td:last-child {
   position: relative;
 
   border-radius: 1rem;
+
+  > .error {
+    max-width: 10rem;
+    text-align: center;
+    justify-self: center;
+  }
 }
 
 input[type="text"],
@@ -386,7 +396,7 @@ label:has(+ input[type="tel"]) {
   height: 1.3rem;
 
   position: absolute;
-  top: -1.6rem;
+  top: -2.4rem;
   left: 0.5rem;
   z-index: 99;
 }
