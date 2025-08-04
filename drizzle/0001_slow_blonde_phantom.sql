@@ -1,0 +1,1 @@
+ALTER TABLE "holiday_coupon"."coupons" ADD COLUMN "redeemed" boolean DEFAULT false NOT NULL;
