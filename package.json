@@ -35,6 +35,7 @@
 		"zod": "^4.0.14"
 	},
 	"dependencies": {
+		"@auth/sveltekit": "^1.10.0",
 		"drizzle-orm": "^0.40.1",
 		"postgres": "^3.4.7"
 	},
