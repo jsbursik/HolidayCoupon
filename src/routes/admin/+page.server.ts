@@ -31,17 +31,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     );
   }
 
-  const rows = await db.select().from(coupons).where(whereClause).limit(PAGE_SIZE).offset(offset);
+  const rows = await db.select().from(coupons).where(whereClause).limit(PAGE_SIZE).offset(offset).orderBy(coupons.id);
 
-  const total = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(coupons)
-    .where(whereClause);
+  const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(coupons);
 
   return {
     session,
     rows,
-    total: Number(total),
+    total: Number(count),
     currentPage: page,
     search,
   };
