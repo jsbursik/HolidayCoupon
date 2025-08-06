@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ToastContainer from "$lib/toast/toast-container.svelte";
   import "../app.css";
 
   let { children } = $props();
@@ -7,3 +8,5 @@
 <main>
   {@render children()}
 </main>
+
+<ToastContainer />
