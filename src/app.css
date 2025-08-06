@@ -116,6 +116,12 @@ select,
   appearance: base-select;
 }
 
+button,
+button:hover,
+button:active {
+  appearance: none;
+}
+
 .center {
   margin: 0 auto;
   justify-content: center;
@@ -216,7 +222,7 @@ select,
   padding: 0.6rem 2rem;
   cursor: pointer;
 
-  border: none;
+  border: 1px solid var(--accent-clr);
   border-radius: 1rem;
 
   font-size: 1em;
@@ -240,6 +246,12 @@ select,
 
   &:focus {
     outline: var(--line-clr) solid 2px;
+  }
+
+  &:active {
+    border: 1px solid var(--accent-clr-shadow);
+    box-shadow: 0 0 10px var(--accent-clr-shadow);
+    outline: none;
   }
 }
 
