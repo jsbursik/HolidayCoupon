@@ -1,0 +1,39 @@
+input {
+  color: var(--text-clr);
+  background-color: var(--bg-clr);
+  width: 14rem;
+
+  border: 1px solid var(--line-clr);
+  border-radius: 1rem;
+
+  padding: 0.5rem 1rem;
+
+  &:focus {
+    outline: none;
+    border: 1px solid var(--accent-clr);
+    box-shadow: 0 0 4px 2px var(--accent-clr);
+  }
+
+  &[type="text"],
+  &[type="email"],
+  &[type="tel"] {
+    box-shadow: 0 0 4px 2px var(--hover-clr);
+  }
+
+  &.valid {
+    box-shadow: 0 0 3px var(--success-clr) !important;
+    border-color: var(--success-clr) !important;
+  }
+
+  &.invalid {
+    box-shadow: 0 0 3px var(--warning-clr) !important;
+    border-color: var(--warning-clr) !important;
+  }
+}
+
+label:has(+ input[type="text"]),
+label:has(+ input[type="email"]),
+label:has(+ input[type="tel"]) {
+  color: var(--text-clr);
+  padding: 0 0.4rem;
+}

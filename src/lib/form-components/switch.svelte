@@ -1,27 +1,22 @@
 <script lang="ts">
-  let { label = "", id, toggle, ...props } = $props();
-  let inputEl: HTMLInputElement;
+  import "./switch.css";
 
-  function handleSliderClick() {
-    inputEl.click();
+  let { label = "", id, onToggle, checked = false, ...props } = $props();
+
+  async function handleChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (onToggle) {
+      await onToggle(target.checked, id);
+    }
   }
 </script>
 
 <div class="switch-wrapper">
-  <label for={id} class="label">{label}</label>
-  <input aria-hidden="true" type="checkbox" onchange={toggle} name={id} {id} bind:this={inputEl} />
-  <span
-    class="slider round"
-    role="checkbox"
-    tabindex="0"
-    aria-checked={inputEl?.checked}
-    aria-labelledby={id}
-    onclick={handleSliderClick}
-    onkeydown={(e) => {
-      if (e.key === " " || e.key === "Enter") {
-        e.preventDefault();
-        handleSliderClick();
-      }
-    }}
-  ></span>
+  {#if label}
+    <label for={id} class="label">{label}</label>
+  {/if}
+  <label class="switch" for={id}>
+    <input type="checkbox" {id} {checked} onchange={handleChange} {...props} />
+    <span class="slider round"></span>
+  </label>
 </div>

@@ -1,0 +1,85 @@
+.switch-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: center;
+  width: fit-content;
+}
+
+.switch-wrapper > .label {
+  padding: 0 0.4rem;
+  text-wrap: nowrap;
+}
+
+/* Container for the switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 3.5rem;
+  height: 2rem;
+}
+
+/* Hide default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background-color: var(--line-clr);
+  border: 1px solid var(--line-clr);
+  box-shadow: 0 0 4px 2px var(--hover-clr);
+
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.2rem;
+  width: 1.2rem;
+  left: 0.3rem;
+  bottom: 0.34rem;
+
+  background-color: var(--bg-clr);
+  transition: 0.4s;
+}
+
+/* When input is checked */
+.switch input:checked + .slider {
+  border-color: var(--accent-clr-shadow);
+  background-color: var(--accent-clr-secondary);
+}
+
+.switch input:checked + .slider:before {
+  background-color: var(--bg-clr);
+  transform: translateX(1.6rem);
+}
+
+/* Focus states */
+.switch input:focus + .slider {
+  box-shadow: 0 0 5px var(--accent-clr);
+  outline: none;
+}
+
+.switch input:focus + .slider:before {
+  box-shadow: 0 0 1px var(--accent-clr);
+}
+
+/* Rounded slider */
+.slider.round {
+  border-radius: 1rem;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

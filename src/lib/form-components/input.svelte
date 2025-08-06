@@ -3,6 +3,8 @@
   import type { InputType } from "$appTypes";
 
   let { type = "text" as InputType, id, label, value = $bindable(), error = "", ...props } = $props();
+
+  import "./input.css";
 </script>
 
 <span class="form-control">
