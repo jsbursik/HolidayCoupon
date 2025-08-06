@@ -45,10 +45,10 @@
 .slider:before {
   position: absolute;
   content: "";
-  height: 1.2rem;
-  width: 1.2rem;
+  height: 1.3rem;
+  width: 1.3rem;
   left: 0.3rem;
-  bottom: 0.34rem;
+  bottom: 0.35rem;
 
   background-color: var(--bg-clr);
   transition: 0.4s;
@@ -62,7 +62,7 @@
 
 .switch input:checked + .slider:before {
   background-color: var(--bg-clr);
-  transform: translateX(1.6rem);
+  transform: translateX(1.4rem);
 }
 
 /* Focus states */
