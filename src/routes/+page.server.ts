@@ -5,7 +5,7 @@ import { CouponFormSchema } from "$lib";
 import { insertSafe } from "$lib/safe-insert";
 
 export const actions: Actions = {
-  default: async ({ request }) => {
+  default: async ({ request, platform }) => {
     const raw = Object.fromEntries(await request.formData());
     const parsed = await CouponFormSchema.safeParseAsync(raw);
 
@@ -19,7 +19,7 @@ export const actions: Actions = {
       phone: parsed.data.phone.replace(/\D/g, ""),
     };
 
-    const result = await insertSafe(cleanData);
+    const result = await insertSafe(cleanData, platform!.env);
 
     if (!result.success) {
       return fail(400, { errors: result.fieldErrors, values: parsed.data });

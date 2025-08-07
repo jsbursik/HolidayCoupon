@@ -1,11 +1,9 @@
-import { pgSchema, serial, date, text, boolean } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 
-export const holidayCoupon = pgSchema("holiday_coupon");
-
-export const coupons = holidayCoupon.table("coupons", {
-  id: serial("id").primaryKey(),
-  date: date("date").notNull(),
-  redeemed: boolean("redeemed").default(false).notNull(),
+export const coupons = sqliteTable("coupons", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  date: text("date").notNull(),
+  redeemed: integer("redeemed", { mode: "boolean" }).default(false).notNull(),
   code: text("code").notNull().unique(),
   first_name: text("first_name").notNull(),
   last_name: text("last_name").notNull(),

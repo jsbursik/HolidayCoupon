@@ -1,0 +1,9 @@
+name = "holiday-coupons"
+compatibility_flags = [ "nodejs_compat" ]
+compatibility_date = "2024-09-25"
+pages_build_output_dir = "build"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "coupons-db"
+database_id = "09c9f633-928c-41b4-9214-99ad73feaee6"

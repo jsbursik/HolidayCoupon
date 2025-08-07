@@ -6,11 +6,12 @@
   import { showError, showSuccess } from "$lib/toast/toastStore";
 
   let { data }: PageProps = $props();
-  let { session, rows, total, currentPage, search } = data;
+  let { session, rows, total, currentPage, search, hasMore } = data;
 
   let userName = session.user?.name;
 
-  const pageCount = Math.ceil(total / 20);
+  // Only calculate pageCount if we have total, otherwise use hasMore for navigation
+  const pageCount = total ? Math.ceil(total / 20) : (hasMore ? currentPage + 1 : currentPage);
 
   function updateSearch(event: SubmitEvent) {
     event.preventDefault();
@@ -95,6 +96,6 @@
   </div>
 {/if}
 
-{#if pageCount > 1}
+{#if pageCount > 1 || hasMore}
   <Paginator curr={currentPage} last={pageCount} onPageClick={goToPage} />
 {/if}

@@ -1,4 +1,4 @@
-import { db } from "$lib/server/db";
+import { createDB, type Env } from "$lib/server/db";
 import { coupons } from "$lib/server/db/schema";
 import type { CouponInput } from "$lib";
 
@@ -18,17 +18,16 @@ function generateCouponCode(length = 8, separator = "-"): string {
 }
 
 type CouponResponse = { success: true; code: string } | { success: false; fieldErrors: Record<string, string[]> };
-type PostgresError = Error & {
+type SqliteError = Error & {
   code?: string;
-  detail?: string;
-  contraint?: string;
+  message: string;
 };
 
-function isPostgresError(err: unknown): err is PostgresError {
-  return typeof err === "object" && err !== null && "code" in err;
+function isSqliteError(err: unknown): err is SqliteError {
+  return typeof err === "object" && err !== null && "message" in err;
 }
 
-export async function insertSafe(data: CouponInput): Promise<CouponResponse> {
+export async function insertSafe(data: CouponInput, env: Env): Promise<CouponResponse> {
   const maxAttempts = 5;
   const date = new Date().toISOString().split("T")[0];
 
@@ -36,27 +35,31 @@ export async function insertSafe(data: CouponInput): Promise<CouponResponse> {
     const code = generateCouponCode();
 
     try {
+      const db = createDB(env);
       await db.insert(coupons).values({ date, ...data, code });
       return { success: true, code };
     } catch (err: unknown) {
-      if (isPostgresError(err) && err.code === "23505") {
-        const msg = err.message || "";
+      if (isSqliteError(err)) {
+        const msg = err.message.toLowerCase();
 
-        if (msg.includes("code")) {
-          continue;
+        // SQLite unique constraint error
+        if (msg.includes("unique constraint") || msg.includes("unique")) {
+          if (msg.includes("code")) {
+            continue;
+          }
+
+          const fieldErrors: Record<string, string[]> = {};
+
+          if (msg.includes("phone")) {
+            fieldErrors.phone = ["This phone number has already been used"];
+          }
+
+          if (msg.includes("email")) {
+            fieldErrors.email = ["This email address has already been used"];
+          }
+
+          return { success: false, fieldErrors };
         }
-
-        const fieldErrors: Record<string, string[]> = {};
-
-        if (msg.includes("phone")) {
-          fieldErrors.phone = ["This phone number has already been used"];
-        }
-
-        if (msg.includes("email")) {
-          fieldErrors.email = ["This email address has already been used"];
-        }
-
-        return { success: false, fieldErrors };
       }
 
       return {
