@@ -1,14 +1,14 @@
 import { SvelteKitAuth } from "@auth/sveltekit";
 import MicrosoftEntraID from "@auth/sveltekit/providers/microsoft-entra-id";
-import { AUTH_MICROSOFT_ENTRA_ID_ID, AUTH_MICROSOFT_ENTRA_ID_SECRET, AUTH_MICROSOFT_ENTRA_ID_ISSUER } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 
 export const { handle, signIn } = SvelteKitAuth({
   trustHost: true, // Allow localhost for development
   providers: [
     MicrosoftEntraID({
-      clientId: AUTH_MICROSOFT_ENTRA_ID_ID,
-      clientSecret: AUTH_MICROSOFT_ENTRA_ID_SECRET,
-      issuer: AUTH_MICROSOFT_ENTRA_ID_ISSUER,
+      clientId: env.AUTH_MICROSOFT_ENTRA_ID_ID!,
+      clientSecret: env.AUTH_MICROSOFT_ENTRA_ID_SECRET!,
+      issuer: env.AUTH_MICROSOFT_ENTRA_ID_ISSUER!,
     }),
   ],
 });
