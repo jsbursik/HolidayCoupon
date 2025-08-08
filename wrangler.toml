@@ -7,3 +7,8 @@ pages_build_output_dir = "build"
 binding = "DB"
 database_name = "coupons-db"
 database_id = "09c9f633-928c-41b4-9214-99ad73feaee6"
+
+[vars]
+FROM_EMAIL = "noreply@holidayautogroup.com"
+RECIPIENT_EMAIL_1 = "jordan@holidayautogroup.com"
+RECIPIENT_EMAIL_2 = "admin@holidayautogroup.com"
