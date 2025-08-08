@@ -13,6 +13,7 @@ interface GraphTokenResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
+  ext_expires_in?: number;
 }
 
 interface EmailMessage {
@@ -42,27 +43,24 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
   });
 
   console.log('Making token request...');
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
   
+  // Try a more basic fetch configuration
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "CloudflareWorker/1.0",
-        "Accept": "application/json",
-      },
-      body: body.toString(),
-      signal: controller.signal,
-      // Add explicit connection settings
-      cf: {
-        timeout: 5000
-      }
-    });
-    clearTimeout(timeoutId);
+    console.log('Fetch starting...');
+    const response = await Promise.race([
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: body.toString(),
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 8000)
+      )
+    ]) as Response;
     
-    console.log('Token response status:', response.status);
+    console.log('Token response received, status:', response.status);
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Token request failed:', errorText);
@@ -70,11 +68,12 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
     }
 
     const tokenData: GraphTokenResponse = await response.json();
+    console.log('Token parsed successfully');
     return tokenData.access_token;
   } catch (error) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
-      console.error('Token request timed out after 10 seconds');
+    console.error('Token request error:', error);
+    if (error.message === 'Request timeout') {
+      console.error('Token request timed out after 8 seconds');
       throw new Error('Token request timed out');
     }
     throw error;
