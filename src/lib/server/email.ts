@@ -32,6 +32,7 @@ interface EmailMessage {
 
 async function getAccessToken(config: EmailConfig): Promise<string> {
   const url = `https://login.microsoftonline.com/${config.tenantId}/oauth2/v2.0/token`;
+  console.log('Token request URL:', url);
 
   const body = new URLSearchParams({
     client_id: config.clientId,
@@ -40,6 +41,7 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
     grant_type: "client_credentials",
   });
 
+  console.log('Making token request...');
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -48,8 +50,10 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
     body: body.toString(),
   });
 
+  console.log('Token response status:', response.status);
   if (!response.ok) {
     const errorText = await response.text();
+    console.error('Token request failed:', errorText);
     throw new Error(`Failed to get access token: ${response.status} ${errorText}`);
   }
 
@@ -153,21 +157,28 @@ export async function sendCouponNotifications(couponData: CouponInput & { code: 
   }
 
   try {
+    console.log('Getting access token...');
     const accessToken = await getAccessToken(config);
+    console.log('Access token acquired successfully');
+    
     const subject = `New Holiday Coupon Generated - ${couponData.first_name} ${couponData.last_name}`;
     const emailBody = generateEmailBody(couponData);
 
     const emailPromises: Promise<void>[] = [];
 
     if (config.recipientEmail1) {
+      console.log('Queuing email to:', config.recipientEmail1);
       emailPromises.push(sendEmail(accessToken, config.fromEmail, config.recipientEmail1, subject, emailBody));
     }
 
     if (config.recipientEmail2) {
+      console.log('Queuing email to:', config.recipientEmail2);
       emailPromises.push(sendEmail(accessToken, config.fromEmail, config.recipientEmail2, subject, emailBody));
     }
 
+    console.log(`Sending ${emailPromises.length} emails...`);
     await Promise.all(emailPromises);
+    console.log('All emails sent successfully');
   } catch (error) {
     console.error("Failed to send coupon notifications:", error);
     // Don't throw the error to prevent it from breaking the coupon creation process
