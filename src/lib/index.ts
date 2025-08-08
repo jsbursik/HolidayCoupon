@@ -1,5 +1,4 @@
 import { z } from "zod";
-import emailValidator from "node-email-verifier";
 
 export const CouponFormSchema = z.object({
   first_name: z
@@ -14,8 +13,25 @@ export const CouponFormSchema = z.object({
     .string()
     .email("Invalid Email Address.")
     .refine(async (email) => {
-      return await emailValidator(email);
-    }, "Email is either fake or temporary"),
+      try {
+        const response = await fetch(`https://api.jsbursik.com/validate-email?email=${encodeURIComponent(email)}`, {
+          method: 'GET',
+          signal: AbortSignal.timeout(4000), // 4 second timeout
+        });
+        
+        if (!response.ok) {
+          console.warn('Email validation service returned error, allowing email through');
+          return true; // Allow if server error
+        }
+        
+        const result = await response.json();
+        return result.valid === true;
+      } catch (error) {
+        // Network error, timeout, or server down - allow the email through
+        console.warn('Email validation service unavailable, allowing email:', error);
+        return true;
+      }
+    }, "Email appears to be invalid or temporary"),
   phone: z.string().min(10, "Phone is required"),
 });
 
