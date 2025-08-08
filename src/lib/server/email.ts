@@ -33,7 +33,7 @@ interface EmailMessage {
 
 async function getAccessToken(config: EmailConfig): Promise<string> {
   const url = `https://login.microsoftonline.com/${config.tenantId}/oauth2/v2.0/token`;
-  console.log('Token request URL:', url);
+  console.log("Token request URL:", url);
 
   const body = new URLSearchParams({
     client_id: config.clientId,
@@ -42,41 +42,19 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
     grant_type: "client_credentials",
   });
 
-  console.log('Making token request...');
-  
-  // Try a more basic fetch configuration
   try {
-    console.log('Fetch starting...');
-    const response = await Promise.race([
-      fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: body.toString(),
-      }),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 8000)
-      )
-    ]) as Response;
-    
-    console.log('Token response received, status:', response.status);
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Token request failed:', errorText);
-      throw new Error(`Failed to get access token: ${response.status} ${errorText}`);
-    }
-
-    const tokenData: GraphTokenResponse = await response.json();
-    console.log('Token parsed successfully');
-    return tokenData.access_token;
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
+    });
+    const json: GraphTokenResponse = await result.json();
+    return json.access_token;
   } catch (error) {
-    console.error('Token request error:', error);
-    if (error.message === 'Request timeout') {
-      console.error('Token request timed out after 8 seconds');
-      throw new Error('Token request timed out');
-    }
-    throw error;
+    console.error(error);
+    throw new Error("Failed to get access token");
   }
 }
 
@@ -102,7 +80,7 @@ async function sendEmail(accessToken: string, fromEmail: string, toEmail: string
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-  
+
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -121,9 +99,9 @@ async function sendEmail(accessToken: string, fromEmail: string, toEmail: string
     }
   } catch (error) {
     clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
-      console.error('Email send request timed out after 10 seconds');
-      throw new Error('Email send request timed out');
+    if (error.name === "AbortError") {
+      console.error("Email send request timed out after 10 seconds");
+      throw new Error("Email send request timed out");
     }
     throw error;
   }
@@ -160,8 +138,8 @@ function generateEmailBody(couponData: CouponInput & { code: string }): string {
 }
 
 export async function sendCouponNotifications(couponData: CouponInput & { code: string }, env: Record<string, string>): Promise<void> {
-  console.log('sendCouponNotifications called for coupon:', couponData.code);
-  
+  console.log("sendCouponNotifications called for coupon:", couponData.code);
+
   const config: EmailConfig = {
     clientId: env.GRAPH_CLIENT_ID,
     clientSecret: env.GRAPH_CLIENT_SECRET,
@@ -171,13 +149,13 @@ export async function sendCouponNotifications(couponData: CouponInput & { code: 
     recipientEmail2: env.RECIPIENT_EMAIL_2,
   };
 
-  console.log('Email config:', {
-    clientId: config.clientId ? 'SET' : 'MISSING',
-    clientSecret: config.clientSecret ? 'SET' : 'MISSING',
-    tenantId: config.tenantId ? 'SET' : 'MISSING',
+  console.log("Email config:", {
+    clientId: config.clientId ? "SET" : "MISSING",
+    clientSecret: config.clientSecret ? "SET" : "MISSING",
+    tenantId: config.tenantId ? "SET" : "MISSING",
     fromEmail: config.fromEmail,
     recipientEmail1: config.recipientEmail1,
-    recipientEmail2: config.recipientEmail2
+    recipientEmail2: config.recipientEmail2,
   });
 
   // Validate required environment variables
@@ -190,28 +168,28 @@ export async function sendCouponNotifications(couponData: CouponInput & { code: 
   }
 
   try {
-    console.log('Getting access token...');
+    console.log("Getting access token...");
     const accessToken = await getAccessToken(config);
-    console.log('Access token acquired successfully');
-    
+    console.log("Access token acquired successfully");
+
     const subject = `New Holiday Coupon Generated - ${couponData.first_name} ${couponData.last_name}`;
     const emailBody = generateEmailBody(couponData);
 
     const emailPromises: Promise<void>[] = [];
 
     if (config.recipientEmail1) {
-      console.log('Queuing email to:', config.recipientEmail1);
+      console.log("Queuing email to:", config.recipientEmail1);
       emailPromises.push(sendEmail(accessToken, config.fromEmail, config.recipientEmail1, subject, emailBody));
     }
 
     if (config.recipientEmail2) {
-      console.log('Queuing email to:', config.recipientEmail2);
+      console.log("Queuing email to:", config.recipientEmail2);
       emailPromises.push(sendEmail(accessToken, config.fromEmail, config.recipientEmail2, subject, emailBody));
     }
 
     console.log(`Sending ${emailPromises.length} emails...`);
     await Promise.all(emailPromises);
-    console.log('All emails sent successfully');
+    console.log("All emails sent successfully");
   } catch (error) {
     console.error("Failed to send coupon notifications:", error);
     // Don't throw the error to prevent it from breaking the coupon creation process
