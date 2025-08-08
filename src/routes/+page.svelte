@@ -7,7 +7,7 @@
   let values = form?.values;
 </script>
 
-<div class="container fit">
+<div class="container fit center">
   <form method="POST">
     <div class="column">
       <h2>Coupon Form:</h2>
