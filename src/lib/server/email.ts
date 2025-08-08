@@ -42,23 +42,37 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
   });
 
   console.log('Making token request...');
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: body.toString(),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+  
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: body.toString(),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    
+    console.log('Token response status:', response.status);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Token request failed:', errorText);
+      throw new Error(`Failed to get access token: ${response.status} ${errorText}`);
+    }
 
-  console.log('Token response status:', response.status);
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Token request failed:', errorText);
-    throw new Error(`Failed to get access token: ${response.status} ${errorText}`);
+    const tokenData: GraphTokenResponse = await response.json();
+    return tokenData.access_token;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      console.error('Token request timed out after 10 seconds');
+      throw new Error('Token request timed out');
+    }
+    throw error;
   }
-
-  const tokenData: GraphTokenResponse = await response.json();
-  return tokenData.access_token;
 }
 
 async function sendEmail(accessToken: string, fromEmail: string, toEmail: string, subject: string, body: string): Promise<void> {
@@ -81,18 +95,32 @@ async function sendEmail(accessToken: string, fromEmail: string, toEmail: string
     },
   };
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(emailMessage),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+  
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(emailMessage),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to send email: ${response.status} ${errorText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to send email: ${response.status} ${errorText}`);
+    }
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      console.error('Email send request timed out after 10 seconds');
+      throw new Error('Email send request timed out');
+    }
+    throw error;
   }
 }
 
