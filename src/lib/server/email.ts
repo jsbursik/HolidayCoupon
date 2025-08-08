@@ -123,6 +123,8 @@ function generateEmailBody(couponData: CouponInput & { code: string }): string {
 }
 
 export async function sendCouponNotifications(couponData: CouponInput & { code: string }, env: Record<string, string>): Promise<void> {
+  console.log('sendCouponNotifications called for coupon:', couponData.code);
+  
   const config: EmailConfig = {
     clientId: env.GRAPH_CLIENT_ID,
     clientSecret: env.GRAPH_CLIENT_SECRET,
@@ -131,6 +133,15 @@ export async function sendCouponNotifications(couponData: CouponInput & { code: 
     recipientEmail1: env.RECIPIENT_EMAIL_1,
     recipientEmail2: env.RECIPIENT_EMAIL_2,
   };
+
+  console.log('Email config:', {
+    clientId: config.clientId ? 'SET' : 'MISSING',
+    clientSecret: config.clientSecret ? 'SET' : 'MISSING',
+    tenantId: config.tenantId ? 'SET' : 'MISSING',
+    fromEmail: config.fromEmail,
+    recipientEmail1: config.recipientEmail1,
+    recipientEmail2: config.recipientEmail2
+  });
 
   // Validate required environment variables
   if (!config.clientId || !config.clientSecret || !config.tenantId || !config.fromEmail) {
