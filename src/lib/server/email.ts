@@ -50,6 +50,7 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
       },
       body,
     });
+    console.log(result.json());
     const json: GraphTokenResponse = await result.json();
     return json.access_token;
   } catch (error) {
