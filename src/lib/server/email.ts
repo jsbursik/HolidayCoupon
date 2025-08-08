@@ -43,16 +43,22 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
 
   console.log('Making token request...');
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
   
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "CloudflareWorker/1.0",
+        "Accept": "application/json",
       },
       body: body.toString(),
       signal: controller.signal,
+      // Add explicit connection settings
+      cf: {
+        timeout: 5000
+      }
     });
     clearTimeout(timeoutId);
     
