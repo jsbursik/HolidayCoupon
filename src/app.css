@@ -339,6 +339,12 @@ form {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+
+      > small.error {
+        max-width: 14rem;
+        margin: 0 auto;
+        text-align: center;
+      }
     }
 
     > .btn {
