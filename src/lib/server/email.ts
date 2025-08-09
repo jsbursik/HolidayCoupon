@@ -43,6 +43,8 @@ async function getAccessToken(config: EmailConfig): Promise<string> {
     grant_type: "client_credentials",
   });
 
+  console.log(body);
+
   try {
     const result = await fetch(url, {
       method: "POST",
