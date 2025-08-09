@@ -15,9 +15,9 @@ export const CouponFormSchema = z.object({
     .refine(async (email) => {
       try {
         const response = await fetch(`https://api.jsbursik.com/api/validate-email?email=${encodeURIComponent(email)}`, {
-          method: "POST",
+          method: "GET",
           headers: {
-            Authorization: "Bearer " + process.env.HOME_AUTH,
+            Authorization: "Bearer " + process.env.JBURSIK_AUTH,
           },
           signal: AbortSignal.timeout(4000), // 4 second timeout
         });
