@@ -10,13 +10,6 @@ interface EmailConfig {
   recipientEmail2: string;
 }
 
-interface GraphTokenResponse {
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-  ext_expires_in?: number;
-}
-
 interface EmailMessage {
   message: {
     subject: string;
@@ -32,34 +25,16 @@ interface EmailMessage {
   };
 }
 
-async function getAccessToken(config: EmailConfig): Promise<string> {
-  const url = `https://login.microsoftonline.com/${config.tenantId}/oauth2/v2.0/token`;
-  console.log("Token request URL:", url);
-
-  const body = new URLSearchParams({
-    client_id: config.clientId,
-    client_secret: config.clientSecret,
-    scope: "https://graph.microsoft.com/.default",
-    grant_type: "client_credentials",
+async function getAccessToken(env: Env): Promise<string> {
+  const res = await fetch("https://api/jsbursik.com/api/graph-token", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${env.JBURSIK_AUTH}`,
+    },
   });
-
-  console.log(body);
-
-  try {
-    const result = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body,
-    });
-    console.log(result.json());
-    const json: GraphTokenResponse = await result.json();
-    return json.access_token;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to get access token");
-  }
+  const { token } = await res.json();
+  return token;
 }
 
 async function sendEmail(accessToken: string, fromEmail: string, toEmail: string, subject: string, body: string): Promise<void> {
@@ -161,7 +136,7 @@ export async function sendCouponNotifications(couponData: CouponInput & { code: 
 
   try {
     console.log("Getting access token...");
-    const accessToken = await getAccessToken(config);
+    const accessToken = await getAccessToken(env);
     console.log("Access token acquired successfully");
 
     const subject = `New Holiday Coupon Generated - ${couponData.first_name} ${couponData.last_name}`;
