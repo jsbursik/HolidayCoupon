@@ -14,21 +14,24 @@ export const CouponFormSchema = z.object({
     .email("Invalid Email Address.")
     .refine(async (email) => {
       try {
-        const response = await fetch(`https://api.jsbursik.com/validate-email?email=${encodeURIComponent(email)}`, {
-          method: 'GET',
+        const response = await fetch(`https://api.jsbursik.com/api/validate-email?email=${encodeURIComponent(email)}`, {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + process.env.HOME_AUTH,
+          },
           signal: AbortSignal.timeout(4000), // 4 second timeout
         });
-        
+
         if (!response.ok) {
-          console.warn('Email validation service returned error, allowing email through');
+          console.warn("Email validation service returned error, allowing email through");
           return true; // Allow if server error
         }
-        
+
         const result = await response.json();
         return result.valid === true;
       } catch (error) {
         // Network error, timeout, or server down - allow the email through
-        console.warn('Email validation service unavailable, allowing email:', error);
+        console.warn("Email validation service unavailable, allowing email:", error);
         return true;
       }
     }, "Email appears to be invalid or temporary"),

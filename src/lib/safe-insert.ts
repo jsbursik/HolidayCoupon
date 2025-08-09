@@ -1,6 +1,7 @@
-import { createDB, type Env } from "$lib/server/db";
-import { coupons } from "$lib/server/db/schema";
 import type { CouponInput } from "$lib";
+import type { Env } from "$lib/types";
+import { createDB } from "$lib/server/db";
+import { coupons } from "$lib/server/db/schema";
 import { sendCouponNotifications } from "$lib/server/email";
 
 function generateCouponCode(length = 8, separator = "-"): string {
@@ -38,13 +39,13 @@ export async function insertSafe(data: CouponInput, env: Env): Promise<CouponRes
     try {
       const db = createDB(env);
       await db.insert(coupons).values({ date, ...data, code });
-      
+
       // Send email notifications (don't await to avoid blocking the response)
-      console.log('Attempting to send email notifications for code:', code);
+      console.log("Attempting to send email notifications for code:", code);
       sendCouponNotifications({ ...data, code }, env).catch((error) => {
-        console.error('Email notification failed:', error);
+        console.error("Email notification failed:", error);
       });
-      
+
       return { success: true, code };
     } catch (err: unknown) {
       if (isSqliteError(err)) {

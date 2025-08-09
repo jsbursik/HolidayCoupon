@@ -3,6 +3,7 @@ import { fail, redirect } from "@sveltejs/kit";
 
 import { CouponFormSchema } from "$lib";
 import { insertSafe } from "$lib/safe-insert";
+import type { Env } from "$lib/types";
 
 export const actions: Actions = {
   default: async ({ request, platform }) => {
@@ -19,7 +20,7 @@ export const actions: Actions = {
       phone: parsed.data.phone.replace(/\D/g, ""),
     };
 
-    const result = await insertSafe(cleanData, platform!.env);
+    const result = await insertSafe(cleanData, platform!.env as Env);
 
     if (!result.success) {
       return fail(400, { errors: result.fieldErrors, values: parsed.data });
