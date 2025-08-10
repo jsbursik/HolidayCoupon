@@ -10,6 +10,13 @@ interface EmailConfig {
   recipientEmail2: string;
 }
 
+export interface GraphTokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  ext_expires_in?: number;
+}
+
 interface EmailMessage {
   message: {
     subject: string;
@@ -25,16 +32,32 @@ interface EmailMessage {
   };
 }
 
-async function getAccessToken(env: Env): Promise<string> {
-  const res = await fetch("https://api.jsbursik.com/api/graph-token", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${env.JBURSIK_AUTH}`,
-    },
+export async function getAccessToken(env: Env): Promise<string> {
+  const url = `https://login.microsoftonline.com/${env.GRAPH_TENANT_ID!}/oauth2/v2.0/token`;
+  console.log("Token request URL:", url);
+
+  const body = new URLSearchParams({
+    client_id: env.GRAPH_CLIENT_ID!,
+    client_secret: env.GRAPH_CLIENT_SECRET!,
+    scope: "https://graph.microsoft.com/.default",
+    grant_type: "client_credentials",
   });
-  const { token } = await res.json();
-  return token;
+
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
+    });
+    const json: GraphTokenResponse = await result.json();
+    console.log(json);
+    return json.access_token;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get access token");
+  }
 }
 
 async function sendEmail(accessToken: string, fromEmail: string, toEmail: string, subject: string, body: string): Promise<void> {
