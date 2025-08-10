@@ -26,7 +26,7 @@ interface EmailMessage {
 }
 
 async function getAccessToken(env: Env): Promise<string> {
-  const res = await fetch("https://api/jsbursik.com/api/graph-token", {
+  const res = await fetch("https://api.jsbursik.com/api/graph-token", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
