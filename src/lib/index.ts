@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CouponFormSchema = z.object({
+export const createCouponFormSchema = (authToken: string) => z.object({
   first_name: z
     .string()
     .min(3, "First Name is required.")
@@ -17,7 +17,7 @@ export const CouponFormSchema = z.object({
         const response = await fetch(`https://api.jsbursik.com/api/validate-email?email=${encodeURIComponent(email)}`, {
           method: "GET",
           headers: {
-            Authorization: "Bearer " + process.env.JBURSIK_AUTH,
+            Authorization: "Bearer " + authToken,
           },
           signal: AbortSignal.timeout(4000), // 4 second timeout
         });
@@ -38,4 +38,4 @@ export const CouponFormSchema = z.object({
   phone: z.string().min(10, "Phone is required"),
 });
 
-export type CouponInput = z.infer<typeof CouponFormSchema>;
+export type CouponInput = z.infer<ReturnType<typeof createCouponFormSchema>>;
