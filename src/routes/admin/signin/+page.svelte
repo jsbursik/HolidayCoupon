@@ -13,7 +13,7 @@
   <img src={logo} alt="Holiday Auto Group" />
   <div>
     {#each providerMap as provider}
-      <SignIn options={{ redirectTo: "/admin" }} provider={provider.id}>
+      <SignIn options={{ redirectTo: "/admin" }} provider={provider.id} signInPage={page.url.href}>
         <div slot="submitButton">
           <span> Signin with {provider.name}</span>
         </div>
