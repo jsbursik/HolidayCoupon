@@ -6,13 +6,14 @@
   let providerMap = data.providers;
 
   import logo from "$lib/assets/logo.png";
+  import { page } from "$app/state";
 </script>
 
 <div class="container center fit">
   <img src={logo} alt="Holiday Auto Group" />
   <div>
     {#each providerMap as provider}
-      <SignIn options={{ redirectTo: "/admin" }} provider={provider.id}>
+      <SignIn options={{ redirectTo: "/admin" }} provider={provider.id} signInPage=".">
         <div slot="submitButton">
           <span> Signin with {provider.name}</span>
         </div>
