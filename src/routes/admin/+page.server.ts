@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import type { Env } from "$lib/types";
 
 import { createDB } from "$lib/server/db";
 import { coupons } from "$lib/server/db/schema";
@@ -14,7 +15,7 @@ export const load: PageServerLoad = async ({ locals, url, platform }) => {
   const search = url.searchParams?.get("search")?.trim();
 
   if (!session?.user?.name) {
-    throw redirect(302, `/auth/signin?redirectTo=${encodeURIComponent(url.pathname)}`);
+    throw redirect(302, `/admin/signin`);
   }
 
   const offset = (page - 1) * PAGE_SIZE;
@@ -31,18 +32,27 @@ export const load: PageServerLoad = async ({ locals, url, platform }) => {
     );
   }
 
-  const db = createDB(platform!.env);
-  
+  const db = createDB(platform!.env as Env);
+
   // Fetch one extra row to determine if there are more pages (cursor-based pagination approach)
-  const rows = await db.select().from(coupons).where(whereClause).limit(PAGE_SIZE + 1).offset(offset).orderBy(coupons.id);
-  
+  const rows = await db
+    .select()
+    .from(coupons)
+    .where(whereClause)
+    .limit(PAGE_SIZE + 1)
+    .offset(offset)
+    .orderBy(coupons.id);
+
   const hasMore = rows.length > PAGE_SIZE;
   const displayRows = hasMore ? rows.slice(0, PAGE_SIZE) : rows;
 
   // Only get count on first page to minimize queries
   let total: number | undefined;
   if (page === 1) {
-    const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(coupons).where(whereClause);
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(coupons)
+      .where(whereClause);
     total = Number(count);
   }
 
