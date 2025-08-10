@@ -1,6 +1,9 @@
 <script lang="ts">
   import { SignIn } from "@auth/sveltekit/components";
-  import { providerMap } from "../../../auth";
+
+  import type { PageData } from "./$types";
+  let { data }: { data: PageData } = $props();
+  let providerMap = data.providers;
 
   import logo from "$lib/assets/logo.png";
 </script>
