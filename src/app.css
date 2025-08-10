@@ -119,7 +119,9 @@ select,
 button,
 button:hover,
 button:active {
-  appearance: none;
+  appearance: none !important;
+  border: none;
+  outline: none;
 }
 
 .center {
