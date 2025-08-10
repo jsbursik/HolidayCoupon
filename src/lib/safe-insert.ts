@@ -42,7 +42,7 @@ export async function insertSafe(data: CouponInput, env: Env): Promise<CouponRes
 
       // Send email notifications (don't await to avoid blocking the response)
       console.log("Attempting to send email notifications for code:", code);
-      sendCouponNotifications({ ...data, code }, env).catch((error) => {
+      await sendCouponNotifications({ ...data, code }, env).catch((error) => {
         console.error("Email notification failed:", error);
       });
 
